@@ -1,0 +1,12 @@
+.PhonesListItem {
+  border-top: 1px solid rgb(224, 224, 224);
+}
+
+.PhonesListItem__wrapper {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  text-align: left;
+  font-size: 0.875rem;
+}

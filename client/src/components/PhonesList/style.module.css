@@ -1,0 +1,9 @@
+.PhonesList {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.PhonesList__wrapper {
+  display: flex;
+  flex-direction: column;
+}
