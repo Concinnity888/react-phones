@@ -1,7 +1,6 @@
 import PhonesListItem from '../PhonesListItem';
 import { useGetPhonesQuery } from '../../redux';
 import style from './style.module.css';
-import { useEffect } from 'react';
 
 function PhonesList() {
   const { data = [], isLoading } = useGetPhonesQuery();

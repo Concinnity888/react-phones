@@ -3,7 +3,12 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+  path: '/socket.io',
+  cors: {
+    origin: '*',
+  },
+});
 const bodyParser = require('body-parser');
 const { PORT = 8080 } = process.env;
 
@@ -39,7 +44,7 @@ app.post('/phones', (req, res) => {
   try {
     const phone = new Phone(req.body);
     phone.save((err) => {
-      io.emit('phone', phone);
+      io.emit('send_phone', phone);
       res.sendStatus(200);
     });
   } catch (err) {

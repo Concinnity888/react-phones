@@ -1,29 +1,55 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { io } from 'socket.io-client';
+
+let socket;
+function getSocket() {
+  if (!socket) {
+    socket = io('http://localhost:8080/');
+  }
+  return socket;
+}
 
 export const phonesApi = createApi({
   reducerPath: 'phonesApi',
-  tagTypes: ['Phones'],
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8080/' }),
-  endpoints: (build) => ({
-    getPhones: build.query({
-      query: () => 'phones',
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ id }) => ({ type: 'Phones', id })),
-              { type: 'Phones', id: 'LIST' },
-            ]
-          : [{ type: 'Phones', id: 'LIST' }],
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'http://localhost:8080/phones',
+  }),
+  endpoints: (builder) => ({
+    getPhones: builder.query({
+      query: () => ({ data: [] }),
+      async onCacheEntryAdded(
+        arg,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData }
+      ) {
+        try {
+          await cacheDataLoaded;
+
+          const socket = getSocket();
+
+          socket.on('connect', () => {});
+
+          socket.on('send_phone', (phone) => {
+            updateCachedData((draft) => {
+              draft.push(phone);
+            });
+          });
+
+          await cacheEntryRemoved;
+
+          socket.off('connect');
+          socket.off('send_phone');
+        } catch (err) {
+          console.log(err);
+        }
+      },
     }),
-    addPhone: build.mutation({
-      query: (photo) => {
+    addPhone: builder.mutation({
+      query: (phone) => {
         return {
-          url: 'phones',
           method: 'POST',
-          body: photo,
+          body: phone,
         };
       },
-      invalidatesTags: [{ type: 'Phones', id: 'LIST' }],
     }),
   }),
 });
